@@ -130,7 +130,6 @@ class SCMRepository implements ISCMRepository {
 
 	private readonly _onDidChangeSelection = new Emitter<boolean>();
 	readonly onDidChangeSelection: Event<boolean> = this._onDidChangeSelection.event;
-	
 	readonly input: ISCMInput = new SCMInput(this, this.storageService);
 
 	constructor(
