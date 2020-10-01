@@ -23,6 +23,7 @@ class SCMInput implements ISCMInput {
 		if (value === this._value) {
 			return;
 		}
+
 		this._value = value;
 		this.saveCurrent();
 		this._onDidChange.fire(value);
@@ -129,6 +130,7 @@ class SCMRepository implements ISCMRepository {
 
 	private readonly _onDidChangeSelection = new Emitter<boolean>();
 	readonly onDidChangeSelection: Event<boolean> = this._onDidChangeSelection.event;
+	
 	readonly input: ISCMInput = new SCMInput(this, this.storageService);
 
 	constructor(
