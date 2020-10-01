@@ -24,6 +24,7 @@ class SCMInput implements ISCMInput {
 			return;
 		}
 		this._value = value;
+		this.saveCurrent();
 		this._onDidChange.fire(value);
 	}
 
@@ -77,11 +78,15 @@ class SCMInput implements ISCMInput {
 		@IStorageService private storageService: IStorageService
 	) {
 		const key = `scm/input:${this.repository.provider.label}:${this.repository.provider.rootUri?.path}`;
-		let result = this.storageService.get(key, StorageScope.WORKSPACE, '[]');
-		if (result) {
-			this.historyNavigator = new HistoryNavigator(JSON.parse(result), 50);
+		let savedHistory = this.storageService.get(key, StorageScope.WORKSPACE, '[]');
+		if (savedHistory) {
+			this.historyNavigator = new HistoryNavigator(JSON.parse(savedHistory), 50);
 		} else {
 			this.historyNavigator = new HistoryNavigator([], 50);
+		}
+		let currentValue = this.storageService.get(`${key}/latest`, StorageScope.WORKSPACE);
+		if (currentValue) {
+			this._value = currentValue;
 		}
 	}
 
@@ -104,6 +109,13 @@ class SCMInput implements ISCMInput {
 		let prev = this.historyNavigator.previous();
 		if (prev) {
 			this.value = prev;
+		}
+	}
+
+	saveCurrent(): void {
+		if (this.repository.provider.rootUri) {
+			const key = `scm/input:${this.repository.provider.label}:${this.repository.provider.rootUri.path}/latest`;
+			this.storageService.store(key, this.value, StorageScope.WORKSPACE);
 		}
 	}
 }
